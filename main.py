@@ -4,6 +4,7 @@ import util
 import resource
 import cloud
 import univ
+import tiles
 
 def main():
     ## start pygame setup stuff
@@ -26,7 +27,17 @@ def main():
     system = univ.System([sun], [], 0)
     galaxy = univ.Galaxy(system)
 
-    state_manager = util.GameStateManager(3, system, sun)
+    tilemap = tiles.TileMap()
+    for i in range(10):
+        row = []
+        for j in range(10):
+            row.append[0]
+        tilemap.append(row)
+
+    world = cloud.World(tilemap)
+    cloud = cloud.Cloud([world])
+
+    state_manager = util.GameStateManager(3, system, sun, world)
     drawer = util.Drawer(state_manager, galaxy, screen)
     ## end game setup stuff
 

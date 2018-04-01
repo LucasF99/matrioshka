@@ -2,10 +2,11 @@ import pygame
 
 class GameStateManager(object):
 
-    def __init__(self, state, system, body):
+    def __init__(self, state, system, body, world):
         self.state = state
         self.system = system
         self.body = body
+        self.world = world
 
     def set_state(self, state):
         self.state = state
@@ -24,6 +25,12 @@ class GameStateManager(object):
 
     def get_body(self):
         return self.body
+
+    def set_world(self, world):
+        self.world = world
+
+    def get_world(self):
+        return world
 
 ########## States
 # 0 - menu
@@ -52,3 +59,13 @@ class Drawer(object):
             image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
 
             self.screen.blit(image, image_rect)
+        elif self.s_man.get_state() == 4:
+
+        start_x = self.screen.get_width()/2
+        start_y = self.screen.get_height()/2
+        start_pos = (start_x, start_y)
+
+        tmap = self.s_man.get_world().get_tilemap()
+        for i in range(len(tmap)):
+            for j in range(len(tmap[i])):
+                pass
