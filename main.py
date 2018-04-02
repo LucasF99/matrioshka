@@ -39,7 +39,7 @@ def main():
     world = cloud.World(tile_map)
     the_cloud = cloud.Cloud([world])
 
-    state_manager = util.GameStateManager(4, system, sun, world)
+    state_manager = util.GameStateManager(3, system, sun, world)
     drawer = util.Drawer(state_manager, galaxy, screen)
     ## end game setup stuff
 

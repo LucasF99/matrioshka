@@ -1,5 +1,6 @@
 import pygame
 import tiles
+import textures
 
 class GameStateManager(object):
 
@@ -51,15 +52,19 @@ class Drawer(object):
     def draw(self):
         if self.s_man.get_state() == 3:
             image = self.s_man.get_body().get_image()
+            sphereimg = textures.img[0]
 
             limiting_dimension = self.screen.get_height()
             if self.screen.get_width() < self.screen.get_height():
                 limiting_dimension = self.screen.get_width()
 
             image = pygame.transform.scale(image, (int(limiting_dimension*0.7), int(limiting_dimension*0.7)))
+            sphereimg = pygame.transform.scale(sphereimg, (int(limiting_dimension*0.9), int(limiting_dimension*0.9)))
             image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
+            sphere_rect = sphereimg.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
 
             self.screen.blit(image, image_rect)
+            self.screen.blit(sphereimg, sphere_rect)
         elif self.s_man.get_state() == 4:
 
             start_x = 0
