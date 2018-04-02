@@ -1,3 +1,6 @@
+import os
+import pygame
+
 class TileMap(object):
     def __init__(self, map, tile_w, tile_h):
         self.map = map
@@ -10,6 +13,11 @@ class TileMap(object):
     def get_tile_h(self):
         return self.tile_h
 
+images = []
+
+dir = os.path.dirname(__file__)
+
+images.append(pygame.image.load(os.path.join(dir, "res", "tile-green.png"))) # index 0
 
 ## TILES
 #

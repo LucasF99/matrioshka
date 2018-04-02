@@ -27,17 +27,19 @@ def main():
     system = univ.System([sun], [], 0)
     galaxy = univ.Galaxy(system)
 
-    tilemap = tiles.TileMap()
+    tmap_list = []
     for i in range(10):
         row = []
         for j in range(10):
-            row.append[0]
-        tilemap.append(row)
+            row.append(0)
+        tmap_list.append(row)
 
-    world = cloud.World(tilemap)
-    cloud = cloud.Cloud([world])
+    tile_map = tiles.TileMap(tmap_list, 64, 32)
 
-    state_manager = util.GameStateManager(3, system, sun, world)
+    world = cloud.World(tile_map)
+    the_cloud = cloud.Cloud([world])
+
+    state_manager = util.GameStateManager(4, system, sun, world)
     drawer = util.Drawer(state_manager, galaxy, screen)
     ## end game setup stuff
 

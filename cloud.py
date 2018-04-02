@@ -3,11 +3,11 @@ class Cloud(object):
         self.worlds = worlds
 
 class World(object):
-    def __init__(self, tilemap):
-        self.tilemap = tilemap
+    def __init__(self, tile_map):
+        self.tile_map = tile_map
 
-    def set_tilemap(self, tilemap):
-        self.tilemap = tilemap
+    def set_tile_map(self, tile_map):
+        self.tile_map = tile_map
 
-    def get_tilemap(self):
-        return self.tilemap()
+    def get_tile_map(self):
+        return self.tile_map

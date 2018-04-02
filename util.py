@@ -1,4 +1,5 @@
 import pygame
+import tiles
 
 class GameStateManager(object):
 
@@ -30,7 +31,7 @@ class GameStateManager(object):
         self.world = world
 
     def get_world(self):
-        return world
+        return self.world
 
 ########## States
 # 0 - menu
@@ -61,11 +62,18 @@ class Drawer(object):
             self.screen.blit(image, image_rect)
         elif self.s_man.get_state() == 4:
 
-        start_x = self.screen.get_width()/2
-        start_y = self.screen.get_height()/2
-        start_pos = (start_x, start_y)
+            start_x = 0
+            start_y = self.screen.get_height()/2
+            start_pos = (start_x, start_y)
 
-        tmap = self.s_man.get_world().get_tilemap()
-        for i in range(len(tmap)):
-            for j in range(len(tmap[i])):
-                pass
+            tmap = self.s_man.get_world().get_tile_map()
+            tw = tmap.get_tile_w()
+            th = tmap.get_tile_h()
+
+            for i in range(len(tmap.map)):
+                for j in reversed(range(len(tmap.map[i]))):
+                    x = start_x + (tw/2)*(i+j)
+                    y = start_y + (th/2)*(j-i)
+                    image = tiles.images[tmap.map[i][j]]
+                    image_rect = image.get_rect(bottomleft=(x,y+th/2))
+                    self.screen.blit(image, image_rect)
