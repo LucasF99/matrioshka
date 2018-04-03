@@ -1,15 +1,16 @@
 import pygame
 import os
 import util
-import resource
+import resources
 import cloud
 import univ
 import tiles
+import buildings
 
 def main():
     ## start pygame setup stuff
-    width = 1920
-    height = 1080
+    width = 400
+    height = 225
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)
@@ -39,6 +40,12 @@ def main():
     world = cloud.World(tile_map)
     the_cloud = cloud.Cloud([world])
 
+    build_manager = buildings.BuildingManager()
+    sphere1 = buildings.Sphere()
+    build_manager.add('spheres', sphere1)
+
+    resource_manager = resources.ResourceManager()
+
     state_manager = util.GameStateManager(3, system, sun, world)
     drawer = util.Drawer(state_manager, galaxy, screen)
     ## end game setup stuff
@@ -55,6 +62,7 @@ def main():
                     done = True
 
         drawer.draw()
+        resource_manager.update_resources(build_manager)
 
         pygame.display.flip()
 
