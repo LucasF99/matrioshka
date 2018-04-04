@@ -1,7 +1,7 @@
 import pygame
 import os
 import util
-import resources
+import data
 import cloud
 import univ
 import tiles
@@ -9,8 +9,8 @@ import buildings
 
 def main():
     ## start pygame setup stuff
-    width = 400
-    height = 225
+    width = 1920
+    height = 1080
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)
@@ -44,10 +44,10 @@ def main():
     sphere1 = buildings.Sphere()
     build_manager.add('spheres', sphere1)
 
-    resource_manager = resources.ResourceManager()
+    data_manager = data.DataManager()
 
     state_manager = util.GameStateManager(3, system, sun, world)
-    drawer = util.Drawer(state_manager, galaxy, screen)
+    drawer = util.Drawer(state_manager, data_manager, galaxy, screen)
     ## end game setup stuff
 
     while not done:
@@ -62,7 +62,7 @@ def main():
                     done = True
 
         drawer.draw()
-        resource_manager.update_resources(build_manager)
+        data_manager.update_data(build_manager)
 
         pygame.display.flip()
 

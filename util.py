@@ -44,10 +44,13 @@ class GameStateManager(object):
 
 class Drawer(object):
 
-    def __init__(self, state_manager, galaxy, screen):
+    def __init__(self, state_manager, data_manager, galaxy, screen):
         self.s_man = state_manager
+        self.d_man = data_manager
         self.galaxy = galaxy
         self.screen = screen
+        pygame.font.init()
+        self.font = pygame.font.SysFont('oratorstdopentype', 24)
 
     def draw(self):
         if self.s_man.get_state() == 3:
@@ -63,8 +66,15 @@ class Drawer(object):
             image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
             sphere_rect = sphereimg.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
 
+
+            text_surface = self.font.render("══╣Energy: %5d/%5d╠═══╣Storage: %5d/%5d╠══"%(self.d_man.get_value('energy'),
+                                            self.d_man.get_value('max_energy'),self.d_man.get_value('storage'),
+                                            self.d_man.get_value('max_storage')), False, (255,255,255))
+
+            self.screen.blit(text_surface, (16, 16))
             self.screen.blit(image, image_rect)
             self.screen.blit(sphereimg, sphere_rect)
+
         elif self.s_man.get_state() == 4:
 
             start_x = 0
