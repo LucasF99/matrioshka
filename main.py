@@ -6,11 +6,12 @@ import cloud
 import univ
 import tiles
 import buildings
+import random
 
 def main():
     ## start pygame setup stuff
-    width = 1920
-    height = 1080
+    width = 800
+    height = 450
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)
@@ -25,7 +26,11 @@ def main():
 
     ## examples
     sun = univ.Star(pygame.image.load(os.path.join(dir,'res','star2.png')), 0)
-    system = univ.System([sun], [], 0)
+    planets = [univ.Planet(pygame.image.load(os.path.join(dir,'res','planet.png')), i)for i in range(5)]
+    system = univ.System([sun], planets, 0)
+    for i in range(5):
+        system.planets[i].set_system(system)
+    sun.set_system(system)
     galaxy = univ.Galaxy(system)
 
     tmap_list = []
@@ -46,23 +51,30 @@ def main():
 
     data_manager = data.DataManager()
 
-    state_manager = util.GameStateManager(3, system, sun, world)
+    state_manager = util.GameStateManager(3, system, sun, world, the_cloud)
+
+    random_event_manager = util.RandomEventManager(state_manager, data_manager)
     drawer = util.Drawer(state_manager, data_manager, galaxy, screen)
     ## end game setup stuff
-
+    
     while not done:
         screen.fill((0,0,0))
-        clock.tick(60)
-
+        clock.tick(framerate)
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
+                if event.key == pygame.K_UP:
+                    state_manager.set_state(4)
+                if event.key == pygame.K_DOWN:
+                    state_manager.set_state(3)
 
         drawer.draw()
         data_manager.update_data(build_manager)
+        random_event_manager.update()
 
         pygame.display.flip()
 

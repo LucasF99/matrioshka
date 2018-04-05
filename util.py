@@ -1,14 +1,16 @@
 import pygame
 import tiles
 import textures
+import random
 
 class GameStateManager(object):
 
-    def __init__(self, state, system, body, world):
+    def __init__(self, state, system, body, world, cloud):
         self.state = state
         self.system = system
         self.body = body
         self.world = world
+        self.cloud = cloud
 
     def set_state(self, state):
         self.state = state
@@ -34,6 +36,9 @@ class GameStateManager(object):
     def get_world(self):
         return self.world
 
+    def get_cloud(self):
+        return self.cloud
+
 ########## States
 # 0 - menu
 # 1 - universe map
@@ -50,11 +55,14 @@ class Drawer(object):
         self.galaxy = galaxy
         self.screen = screen
         pygame.font.init()
-        self.font = pygame.font.SysFont('oratorstdopentype', 24)
+        #self.font = pygame.font.SysFont('oratorstdopentype', 24)
+        self.font = pygame.font.SysFont('arial', 24)
 
     def draw(self):
         if self.s_man.get_state() == 3:
-            image = self.s_man.get_body().get_image()
+            body = self.s_man.get_body()
+            image = body.get_image()
+            the_cloud = self.s_man.get_cloud()
             sphereimg = textures.img[0]
 
             limiting_dimension = self.screen.get_height()
@@ -67,11 +75,15 @@ class Drawer(object):
             sphere_rect = sphereimg.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
 
 
-            text_surface = self.font.render("══╣Energy: %5d/%5d╠═══╣Storage: %5d/%5d╠══"%(self.d_man.get_value('energy'),
+            text_surface = self.font.render("══╣Energy: %5d/%5d╠══╣Storage: %5d/%5d╠══╣Money: %5d╠══"%(self.d_man.get_value('energy'),
                                             self.d_man.get_value('max_energy'),self.d_man.get_value('storage'),
-                                            self.d_man.get_value('max_storage')), False, (255,255,255))
+                                            self.d_man.get_value('max_storage'),self.d_man.get_value('money')),
+                                            False, (255,255,255))
+
+            system_data = self.font.render("══╣System Population: %8d╠══╣Cloud Population: %8d╠══"%(body.system.get_population(),the_cloud.get_population()),False,(255,255,255))
 
             self.screen.blit(text_surface, (16, 16))
+            self.screen.blit(system_data, (16, self.screen.get_height()-40))
             self.screen.blit(image, image_rect)
             self.screen.blit(sphereimg, sphere_rect)
 
@@ -92,3 +104,20 @@ class Drawer(object):
                     image = tiles.images[tmap.map[i][j]]
                     image_rect = image.get_rect(bottomleft=(x,y+th/2))
                     self.screen.blit(image, image_rect)
+
+class RandomEventManager(object):
+
+    def __init__(self, state_manager, data_manager):
+        self.s_man = state_manager
+        self.d_man = data_manager
+
+    def update(self):
+        if self.s_man.get_state() == 3:
+            if random.randint(1,60) == 1:
+                self.d_man.add_value('money', self.d_man.price)
+                self.d_man.add_value('storage', 10)
+                self.s_man.get_cloud().add_population(10)
+                random.choice(self.s_man.system.planets).add_population(-10)
+                self.s_man.system.update_population()
+                
+            
