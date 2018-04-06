@@ -15,6 +15,9 @@ class GameStateManager(object):
     def set_state(self, state):
         self.state = state
 
+    def add_state(self, val):
+        self.state += val
+
     def get_state(self):
         return self.state
 
@@ -49,11 +52,12 @@ class GameStateManager(object):
 
 class Drawer(object):
 
-    def __init__(self, state_manager, data_manager, galaxy, screen):
+    def __init__(self, state_manager, data_manager, ui_manager, galaxy, screen):
         self.s_man = state_manager
         self.d_man = data_manager
         self.galaxy = galaxy
         self.screen = screen
+        self.ui_man = ui_manager
         pygame.font.init()
         #self.font = pygame.font.SysFont('oratorstdopentype', 24)
         self.font = pygame.font.SysFont('arial', 24)
@@ -74,16 +78,6 @@ class Drawer(object):
             image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
             sphere_rect = sphereimg.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
 
-
-            text_surface = self.font.render("══╣Energy: %5d/%5d╠══╣Storage: %5d/%5d╠══╣Money: %5d╠══"%(self.d_man.get_value('energy'),
-                                            self.d_man.get_value('max_energy'),self.d_man.get_value('storage'),
-                                            self.d_man.get_value('max_storage'),self.d_man.get_value('money')),
-                                            False, (255,255,255))
-
-            system_data = self.font.render("══╣System Population: %8d╠══╣Cloud Population: %8d╠══"%(body.system.get_population(),the_cloud.get_population()),False,(255,255,255))
-
-            self.screen.blit(text_surface, (16, 16))
-            self.screen.blit(system_data, (16, self.screen.get_height()-40))
             self.screen.blit(image, image_rect)
             self.screen.blit(sphereimg, sphere_rect)
 
@@ -105,6 +99,41 @@ class Drawer(object):
                     image_rect = image.get_rect(bottomleft=(x,y+th/2))
                     self.screen.blit(image, image_rect)
 
+        elif self.s_man.get_state() == 2:
+
+            bodies = self.s_man.get_system().bodies
+            num_bodies = len(bodies)
+
+            screen_w = self.screen.get_width()
+            screen_h = self.screen.get_height()
+
+            total_w = 0
+            current_w = 0
+
+            for i in bodies:
+                total_w += i.get_image().get_width()
+
+            for i in range(num_bodies):
+                image = bodies[i].get_image()
+                w = image.get_width()
+                h = image.get_height()
+                x = 0.9*screen_w - 0.8*i*((screen_w-total_w)/num_bodies) - current_w
+                y = screen_h/2
+                rect = image.get_rect(midright=(x,y))
+                self.screen.blit(image, rect)
+                current_w += w
+
+                mouse_x = pygame.mouse.get_pos()[0]
+                mouse_y = pygame.mouse.get_pos()[1]
+
+                if mouse_x<=x and mouse_x>=x-w:
+                    if mouse_y>=y-h/2 and mouse_y<=y+h/2:
+                        ## hover detection
+                        # display planet name
+                        pass
+
+        self.ui_man.draw()
+
 class RandomEventManager(object):
 
     def __init__(self, state_manager, data_manager):
@@ -112,12 +141,12 @@ class RandomEventManager(object):
         self.d_man = data_manager
 
     def update(self):
-        if self.s_man.get_state() == 3:
-            if random.randint(1,60) == 1:
-                self.d_man.add_value('money', self.d_man.price)
-                self.d_man.add_value('storage', 10)
-                self.s_man.get_cloud().add_population(10)
-                random.choice(self.s_man.system.planets).add_population(-10)
-                self.s_man.system.update_population()
-                
-            
+        if random.randint(1,60) == 1: # make people randomly move into cloud
+            self.d_man.add_value('money', self.d_man.price)
+            self.d_man.add_value('storage', 10)
+            self.s_man.get_cloud().add_population(10)
+            random.choice(self.s_man.system.planets).add_population(-10)
+            self.s_man.system.update_population()
+
+class EventHandler(object):
+    pass

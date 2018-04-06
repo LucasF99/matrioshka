@@ -7,11 +7,12 @@ import univ
 import tiles
 import buildings
 import random
+import ui
 
 def main():
     ## start pygame setup stuff
-    width = 800
-    height = 450
+    width = 1920
+    height = 1080
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)
@@ -53,24 +54,28 @@ def main():
 
     state_manager = util.GameStateManager(3, system, sun, world, the_cloud)
 
+    ui_manager = ui.UIManager(state_manager, data_manager, screen)
+
     random_event_manager = util.RandomEventManager(state_manager, data_manager)
-    drawer = util.Drawer(state_manager, data_manager, galaxy, screen)
+    drawer = util.Drawer(state_manager, data_manager, ui_manager, galaxy, screen)
     ## end game setup stuff
-    
+
     while not done:
         screen.fill((0,0,0))
         clock.tick(framerate)
-        
+
+        #print(clock.get_fps())
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
-                if event.key == pygame.K_UP:
-                    state_manager.set_state(4)
-                if event.key == pygame.K_DOWN:
-                    state_manager.set_state(3)
+                if event.key == pygame.K_UP and state_manager.get_state()<4:
+                    state_manager.add_state(1)
+                if event.key == pygame.K_DOWN and state_manager.get_state()>2:
+                    state_manager.add_state(-1)
 
         drawer.draw()
         data_manager.update_data(build_manager)
