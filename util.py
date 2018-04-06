@@ -105,6 +105,19 @@ class Drawer(object):
                     image_rect = image.get_rect(bottomleft=(x,y+th/2))
                     self.screen.blit(image, image_rect)
 
+        elif self.s_man.get_state() == 2;
+
+            bodies = self.s_man.get_system().bodies
+            num_bodies = len(bodies)
+
+            screen_w = self.screen.get_width()
+            screen_h = self.screen.get_height()
+
+            for i in range(num_bodies):
+                image = bodies[i].get_image()
+                rect = image.get_rect(midleft=(0.1*screen_w+(0.8*screen_w/num_bodies),screen_h/2))
+                self.screen.blit(image, rect)
+
 class RandomEventManager(object):
 
     def __init__(self, state_manager, data_manager):
@@ -119,5 +132,3 @@ class RandomEventManager(object):
                 self.s_man.get_cloud().add_population(10)
                 random.choice(self.s_man.system.planets).add_population(-10)
                 self.s_man.system.update_population()
-                
-            

@@ -56,11 +56,11 @@ def main():
     random_event_manager = util.RandomEventManager(state_manager, data_manager)
     drawer = util.Drawer(state_manager, data_manager, galaxy, screen)
     ## end game setup stuff
-    
+
     while not done:
         screen.fill((0,0,0))
         clock.tick(framerate)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
