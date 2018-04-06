@@ -67,10 +67,10 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     done = True
-                if event.key == pygame.K_UP:
-                    state_manager.set_state(4)
-                if event.key == pygame.K_DOWN:
-                    state_manager.set_state(3)
+                if event.key == pygame.K_UP and state_manager.get_state()<4:
+                    state_manager.add_state(1)
+                if event.key == pygame.K_DOWN and state_manager.get_state()>2:
+                    state_manager.add_state(-1)
 
         drawer.draw()
         data_manager.update_data(build_manager)

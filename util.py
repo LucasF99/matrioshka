@@ -15,6 +15,9 @@ class GameStateManager(object):
     def set_state(self, state):
         self.state = state
 
+    def add_state(self, val):
+        self.state += val
+
     def get_state(self):
         return self.state
 
@@ -105,7 +108,7 @@ class Drawer(object):
                     image_rect = image.get_rect(bottomleft=(x,y+th/2))
                     self.screen.blit(image, image_rect)
 
-        elif self.s_man.get_state() == 2;
+        elif self.s_man.get_state() == 2:
 
             bodies = self.s_man.get_system().bodies
             num_bodies = len(bodies)
@@ -113,10 +116,30 @@ class Drawer(object):
             screen_w = self.screen.get_width()
             screen_h = self.screen.get_height()
 
+            total_w = 0
+            current_w = 0
+
+            for i in bodies:
+                total_w += i.get_image().get_width()
+
             for i in range(num_bodies):
                 image = bodies[i].get_image()
-                rect = image.get_rect(midleft=(0.1*screen_w+(0.8*screen_w/num_bodies),screen_h/2))
+                w = image.get_width()
+                h = image.get_height()
+                x = 0.9*screen_w - 0.8*i*((screen_w-total_w)/num_bodies) - current_w
+                y = screen_h/2
+                rect = image.get_rect(midright=(x,y))
                 self.screen.blit(image, rect)
+                current_w += w
+
+                mouse_x = pygame.get_pos()[0]
+                mouse_y = pygame.get_pos()[1]
+
+                if mouse_x<=x and mouse_x>=x-w:
+                    if mouse_y>=y-h/2 and mous<=y+h/2:
+                        ## hover detection
+                        # display planet name
+                        pass
 
 class RandomEventManager(object):
 
