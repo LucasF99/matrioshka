@@ -33,7 +33,6 @@ class UIManager(object):
 
     def draw(self):
         if self.s_man.get_state() == 3:
-            print("a")
 
             body = self.s_man.get_body()
             the_cloud = self.s_man.get_cloud()
@@ -50,7 +49,7 @@ class UIManager(object):
                                             self.d_man.get_value('max_energy'),self.d_man.get_value('storage'),
                                             self.d_man.get_value('max_storage'),self.d_man.get_value('money'),
                                             body.system.get_population(),the_cloud.get_population()),
-                                            False, (0,0,0))
+                                            True, (0,0,0))
 
             self.screen.blit(text_surface, (16, 10))
 
@@ -58,3 +57,16 @@ class UIManager(object):
             rect = i[4].get_rect(topleft=(i[0], i[1]))
             self.screen.blit(i[4],rect)
             ## TODO: run func (i[5]) when clicked (do this in eventhandler)
+
+    def check_button_pressed(self, pos):
+        for b in self.buttons[self.s_man.get_state()]:
+            print(str(b))
+            if pos[0] >= b[0] and pos[0] <= b[0]+b[2]:
+                if pos[1] >= b[1] and pos[1] <= b[0]+b[3]:
+                    b[5]()
+
+
+    def draw_text_box(self, text, antialias, color, background, x, y):
+        #text_box = self.font.render(text, antialias, color, background)
+        text_box = self.font.render(text, antialias, color, background)
+        self.screen.blit(text_box, (x,y))

@@ -26,8 +26,8 @@ def main():
     ## start game setup stuff
 
     ## examples
-    sun = univ.Star(pygame.image.load(os.path.join(dir,'res','star2.png')), 0)
-    planets = [univ.Planet(pygame.image.load(os.path.join(dir,'res','planet.png')), i)for i in range(5)]
+    sun = univ.Star(pygame.image.load(os.path.join(dir,'res','star2.png')), 0, "testnameA")
+    planets = [univ.Planet(pygame.image.load(os.path.join(dir,'res','planet.png')), i, "testname%d"%i)for i in range(5)]
     system = univ.System([sun], planets, 0)
     for i in range(5):
         system.planets[i].set_system(system)
@@ -56,6 +56,8 @@ def main():
 
     ui_manager = ui.UIManager(state_manager, data_manager, screen)
 
+    event_handler = util.EventHandler(state_manager, data_manager, ui_manager, galaxy, screen)
+
     random_event_manager = util.RandomEventManager(state_manager, data_manager)
     drawer = util.Drawer(state_manager, data_manager, ui_manager, galaxy, screen)
     ## end game setup stuff
@@ -77,6 +79,7 @@ def main():
                 if event.key == pygame.K_DOWN and state_manager.get_state()>2:
                     state_manager.add_state(-1)
 
+        event_handler.update()
         drawer.draw()
         data_manager.update_data(build_manager)
         random_event_manager.update()

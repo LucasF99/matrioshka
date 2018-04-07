@@ -128,9 +128,7 @@ class Drawer(object):
 
                 if mouse_x<=x and mouse_x>=x-w:
                     if mouse_y>=y-h/2 and mouse_y<=y+h/2:
-                        ## hover detection
-                        # display planet name
-                        pass
+                        self.ui_man.draw_text_box(bodies[i].get_name(), True, (10,10,10), (180,180,180), x+w/10, y-h/2)
 
         self.ui_man.draw()
 
@@ -149,4 +147,14 @@ class RandomEventManager(object):
             self.s_man.system.update_population()
 
 class EventHandler(object):
-    pass
+
+    def __init__(self, state_manager, data_manager, ui_manager, galaxy, screen):
+        self.s_man = state_manager
+        self.d_man = data_manager
+        self.galaxy = galaxy
+        self.screen = screen
+        self.ui_man = ui_manager
+
+    def update(self):
+        if pygame.mouse.get_pressed()[0]:
+            self.ui_man.check_button_pressed(pygame.mouse.get_pos())
