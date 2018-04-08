@@ -60,7 +60,6 @@ class UIManager(object):
 
     def check_button_pressed(self, pos):
         for b in self.buttons[self.s_man.get_state()]:
-            print(str(b))
             if pos[0] >= b[0] and pos[0] <= b[0]+b[2]:
                 if pos[1] >= b[1] and pos[1] <= b[0]+b[3]:
                     b[5]()
