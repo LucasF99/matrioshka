@@ -1,3 +1,5 @@
+import textures
+
 class Galaxy(object):
     def __init__(self, systems):
         self.systems = systems
@@ -39,6 +41,9 @@ class Body(object):
     def get_name(self):
         return self.name
 
+    def get_type(self):
+        return self.type
+
 class Star(Body):
     def __init__(self, image, index, name):
         self.index = index
@@ -46,9 +51,22 @@ class Star(Body):
         self.type = "star"
         self.system = None
         self.name = name
+        self.energy_level = 0
+
+        self.upgrade_img = textures.img[1]
 
     def set_system(self, system):
         self.system = system
+
+    def get_energy_level(self):
+        return self.energy_level
+
+    def set_energy_level(self, value):
+        print("set")
+        self.energy_value = value
+
+    def add_energy_level(self, value):
+        self.energy_level += value
 
 class Planet(Body):
     def __init__(self, image, index, name):

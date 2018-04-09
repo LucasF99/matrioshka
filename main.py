@@ -21,13 +21,16 @@ def main():
     framerate = 60
 
     dir = os.path.dirname(__file__)
+
+    def set_done(value):
+        done = value
     ## end pygame setup stuff
 
     ## start game setup stuff
 
     ## examples
-    sun = univ.Star(pygame.image.load(os.path.join(dir,'res','star2.png')), 0, "testnameA")
-    planets = [univ.Planet(pygame.image.load(os.path.join(dir,'res','planet.png')), i, "testname%d"%i)for i in range(5)]
+    sun = univ.Star(pygame.image.load(os.path.join(dir,'res','star2.png')), 0, " testnameA ")
+    planets = [univ.Planet(pygame.image.load(os.path.join(dir,'res','planet.png')), i, " testname%d "%i)for i in range(5)]
     system = univ.System([sun], planets, 0)
     for i in range(5):
         system.planets[i].set_system(system)
@@ -62,22 +65,11 @@ def main():
     drawer = util.Drawer(state_manager, data_manager, ui_manager, galaxy, screen)
     ## end game setup stuff
 
-    while not done:
+    while not state_manager.get_done():
         screen.fill((0,0,0))
         clock.tick(framerate)
 
         #print(clock.get_fps())
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    done = True
-                if event.key == pygame.K_UP and state_manager.get_state()<4:
-                    state_manager.add_state(1)
-                if event.key == pygame.K_DOWN and state_manager.get_state()>2:
-                    state_manager.add_state(-1)
 
         event_handler.update()
         drawer.draw()

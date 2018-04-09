@@ -11,6 +11,7 @@ class GameStateManager(object):
         self.body = body
         self.world = world
         self.cloud = cloud
+        self.done = False
 
     def set_state(self, state):
         self.state = state
@@ -42,6 +43,12 @@ class GameStateManager(object):
     def get_cloud(self):
         return self.cloud
 
+    def get_done(self):
+        return self.done
+
+    def set_done(self, value):
+        self.done = value
+
 ########## States
 # 0 - menu
 # 1 - universe map
@@ -58,28 +65,51 @@ class Drawer(object):
         self.galaxy = galaxy
         self.screen = screen
         self.ui_man = ui_manager
+        self.screen_w = screen.get_width()
+        self.screen_h = screen.get_height()
         pygame.font.init()
         #self.font = pygame.font.SysFont('oratorstdopentype', 24)
         self.font = pygame.font.SysFont('arial', 24)
+        limiting_dimension = self.screen.get_height()
+        if self.screen.get_width() < self.screen.get_height():
+            limiting_dimension = self.screen.get_width()
+        self.body_view_size = int(limiting_dimension*0.7)
 
     def draw(self):
         if self.s_man.get_state() == 3:
             body = self.s_man.get_body()
-            image = body.get_image()
-            the_cloud = self.s_man.get_cloud()
-            sphereimg = textures.img[0]
+            if body.get_type() == 'star':
+                image = body.get_image()
+                the_cloud = self.s_man.get_cloud()
+                sphereimg = textures.img[0]
 
-            limiting_dimension = self.screen.get_height()
-            if self.screen.get_width() < self.screen.get_height():
-                limiting_dimension = self.screen.get_width()
+                image = pygame.transform.scale(image, (self.body_view_size, self.body_view_size))
+                sphereimg = pygame.transform.scale(sphereimg, (int(self.body_view_size*1.3), int(self.body_view_size*1.3)))
+                image_rect = image.get_rect(center=(self.screen_w/2, self.screen_h/2))
+                sphere_rect = sphereimg.get_rect(center=(self.screen_w/2, self.screen_h/2))
 
-            image = pygame.transform.scale(image, (int(limiting_dimension*0.7), int(limiting_dimension*0.7)))
-            sphereimg = pygame.transform.scale(sphereimg, (int(limiting_dimension*0.9), int(limiting_dimension*0.9)))
-            image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
-            sphere_rect = sphereimg.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
+                self.screen.blit(image, image_rect)
+                self.screen.blit(sphereimg, sphere_rect)
 
-            self.screen.blit(image, image_rect)
-            self.screen.blit(sphereimg, sphere_rect)
+                print("body: " + str(body))
+                print("level: %d"%body.get_energy_level())
+                if body.get_energy_level() == 1:
+                    upgrade_img = pygame.transform.scale(body.upgrade_img, (int(self.body_view_size*0.3),int(self.body_view_size*0.3)))
+                    upgrade_rect = upgrade_img.get_rect(center=(self.screen_w/2, self.screen_h/2))
+                    self.screen.blit(upgrade_img, upgrade_rect)
+
+            elif body.get_type() == 'planet':
+                image = body.get_image()
+                the_cloud = self.s_man.get_cloud()
+
+                limiting_dimension = self.screen.get_height()
+                if self.screen.get_width() < self.screen.get_height():
+                    limiting_dimension = self.screen.get_width()
+
+                image = pygame.transform.scale(image, (int(limiting_dimension*0.7), int(limiting_dimension*0.7)))
+                image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
+
+                self.screen.blit(image, image_rect)
 
         elif self.s_man.get_state() == 4:
 
@@ -129,6 +159,9 @@ class Drawer(object):
                 if mouse_x<=x and mouse_x>=x-w:
                     if mouse_y>=y-h/2 and mouse_y<=y+h/2:
                         self.ui_man.draw_text_box(bodies[i].get_name(), True, (10,10,10), (180,180,180), x+w/10, y-h/2)
+                        if pygame.mouse.get_pressed()[0]:
+                            self.s_man.set_body(bodies[i])
+                            self.s_man.set_state(3)
 
         self.ui_man.draw()
 
@@ -156,5 +189,17 @@ class EventHandler(object):
         self.ui_man = ui_manager
 
     def update(self):
-        if pygame.mouse.get_pressed()[0]:
-            self.ui_man.check_button_pressed(pygame.mouse.get_pos())
+    #    if pygame.mouse.get_pressed()[0]:
+    #        self.ui_man.check_button_pressed(pygame.mouse.get_pos())
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                self.ui_man.check_button_pressed(pygame.mouse.get_pos())
+            if event.type == pygame.QUIT:
+                self.s_man.set_done(True)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.s_man.set_done(True)
+                if event.key == pygame.K_UP and self.s_man.get_state()<4:
+                    self.s_man.add_state(1)
+                if event.key == pygame.K_DOWN and self.s_man.get_state()>2:
+                    self.s_man.add_state(-1)
