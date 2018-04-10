@@ -90,9 +90,7 @@ class Drawer(object):
 
                 self.screen.blit(image, image_rect)
                 self.screen.blit(sphereimg, sphere_rect)
-
-                print("body: " + str(body))
-                print("level: %d"%body.get_energy_level())
+                
                 if body.get_energy_level() == 1:
                     upgrade_img = pygame.transform.scale(body.upgrade_img, (int(self.body_view_size*0.3),int(self.body_view_size*0.3)))
                     upgrade_rect = upgrade_img.get_rect(center=(self.screen_w/2, self.screen_h/2))

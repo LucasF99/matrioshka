@@ -44,6 +44,15 @@ class Body(object):
     def get_type(self):
         return self.type
 
+    def get_energy_level(self):
+        return self.energy_level
+
+    def set_energy_level(self, value):
+        self.energy_level = value
+
+    def add_energy_level(self, value):
+        self.energy_level += value
+
 class Star(Body):
     def __init__(self, image, index, name):
         self.index = index
@@ -58,15 +67,7 @@ class Star(Body):
     def set_system(self, system):
         self.system = system
 
-    def get_energy_level(self):
-        return self.energy_level
 
-    def set_energy_level(self, value):
-        print("set")
-        self.energy_value = value
-
-    def add_energy_level(self, value):
-        self.energy_level += value
 
 class Planet(Body):
     def __init__(self, image, index, name):

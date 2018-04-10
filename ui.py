@@ -9,8 +9,9 @@ class UIManager(object):
         self.screen = screen
         pygame.font.init()
         #self.font = pygame.font.SysFont('oratorstdopentype', 24)
-        self.font = pygame.font.SysFont('arial', int(0.03*screen.get_height()))
+        #self.font = pygame.font.SysFont('arial', int(0.03*screen.get_height()))
         self.dir = os.path.dirname(__file__)
+        self.font = pygame.font.Font(os.path.join(self.dir, 'res', 'font', 'novem___.ttf'), int(0.03*screen.get_height()))
         self.images = []
         self.scl = int(self.screen.get_height()/480)
         #self.images.append(pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','system_icon.png')),
@@ -60,6 +61,7 @@ class UIManager(object):
         self.elements[2].append(self.elements[3][0])
 
     def run_body_relative_func(self, args):
+        # args: [state manager, 'func', args]
         print("rel body: " + str(args[0].get_body()))
         getattr(args[0].get_body(), args[1])(args[2])
 
@@ -87,22 +89,24 @@ class UIManager(object):
             screen_w = self.screen.get_width()
             screen_h = self.screen.get_height()
             color = (200,200,200)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, 0, screen_w, screen_h*0.05))
+            pygame.draw.rect(self.screen, color, pygame.Rect(0, 0, screen_w, screen_h*0.05*2))
             pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
             color = (100,100,100)
             pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h*0.05*2, screen_w, screen_h*0.005))
 
             color = (240, 240, 240)
             pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
 
-            text_surface = self.font.render("Energy: %5d/%5d    Storage: %5d/%5d    Money: %5d    System Population: %8d    Cloud Population: %8d"%(self.d_man.get_value('energy'),
+            text_surface = self.font.render("Energy: %5d/%5d    Storage: %5d/%5d    Money: %5d"%(self.d_man.get_value('energy'),
                                             self.d_man.get_value('max_energy'),self.d_man.get_value('storage'),
-                                            self.d_man.get_value('max_storage'),self.d_man.get_value('money'),
-                                            body.system.get_population(),the_cloud.get_population()),
+                                            self.d_man.get_value('max_storage'),self.d_man.get_value('money')),
                                             True, (0,0,0))
+            text_2 = self.font.render("System Population: %8d    Cloud Population: %8d"%(body.system.get_population(),the_cloud.get_population()), True, (0,0,0))
 
-            self.screen.blit(text_surface, (16, 10))
+            self.screen.blit(text_surface, (16, 14))
+            self.screen.blit(text_2, (140, 72))
 
         elif self.s_man.get_state() == 2:
             screen_w = self.screen.get_width()
