@@ -14,6 +14,11 @@ class UIManager(object):
         self.font = pygame.font.Font(os.path.join(self.dir, 'res', 'font', 'novem___.ttf'), int(0.03*screen.get_height()))
         self.images = []
         self.scl = int(self.screen.get_height()/480)
+
+        self.color=(51,102,153)
+        self.color_dark=(0,51,102)
+        self.color_light=(51,102,204)
+
         #self.images.append(pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','system_icon.png')),
         #                                          (64*self.scl, 64*self.scl))) # index 0
 
@@ -30,6 +35,7 @@ class UIManager(object):
                                                 (64*self.scl, 64*self.scl))
         self.img_energy_upgrade_icon = pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','energy_upgrade_icon.png')),
                                                 (64*self.scl, 64*self.scl))
+        self.img_test_red = pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','test_red.png')),(16*self.scl, 16*self.scl))
 
         self.init_elements()
         self.init_buttons()
@@ -88,51 +94,46 @@ class UIManager(object):
 
             screen_w = self.screen.get_width()
             screen_h = self.screen.get_height()
-            color = (200,200,200)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, 0, screen_w, screen_h*0.05*2))
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
-            color = (100,100,100)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h*0.05*2, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color, pygame.Rect(0, 0, screen_w, screen_h*0.05*2))
+            pygame.draw.rect(self.screen, self.color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
-            color = (240, 240, 240)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color_dark, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color_dark, pygame.Rect(0, screen_h*0.05*2, screen_w, screen_h*0.005))
+
+            pygame.draw.rect(self.screen, self.color_light, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
 
             text_surface = self.font.render("Energy: %5d/%5d    Storage: %5d/%5d    Money: %5d"%(self.d_man.get_value('energy'),
                                             self.d_man.get_value('max_energy'),self.d_man.get_value('storage'),
                                             self.d_man.get_value('max_storage'),self.d_man.get_value('money')),
-                                            True, (0,0,0))
-            text_2 = self.font.render("System Population: %8d    Cloud Population: %8d"%(body.system.get_population(),the_cloud.get_population()), True, (0,0,0))
+                                            True, (220,220,220))
+            text_2 = self.font.render("System Population: %8d    Cloud Population: %8d"%(body.system.get_population(),
+                                        the_cloud.get_population()), True, (220,220,220))
 
             self.screen.blit(text_surface, (16, 14))
-            self.screen.blit(text_2, (140, 72))
+            self.screen.blit(text_2, (0+64*self.scl, screen_h*0.07))
 
         elif self.s_man.get_state() == 2:
             screen_w = self.screen.get_width()
             screen_h = self.screen.get_height()
-            color = (200,200,200)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, 0, screen_w, screen_h*0.05))
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
-            color = (100,100,100)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color, pygame.Rect(0, 0, screen_w, screen_h*0.05))
+            pygame.draw.rect(self.screen, self.color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
-            color = (240, 240, 240)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color_dark, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
+
+            pygame.draw.rect(self.screen, self.color_light, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
 
         elif self.s_man.get_state() == 4:
             screen_w = self.screen.get_width()
             screen_h = self.screen.get_height()
-            color = (200,200,200)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, 0, screen_w, screen_h*0.05))
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
-            color = (100,100,100)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color, pygame.Rect(0, 0, screen_w, screen_h*0.05))
+            pygame.draw.rect(self.screen, self.color, pygame.Rect(0, screen_h-screen_h*0.05, screen_w, screen_h*0.05))
 
-            color = (240, 240, 240)
-            pygame.draw.rect(self.screen, color, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
+            pygame.draw.rect(self.screen, self.color_dark, pygame.Rect(0, screen_h*0.05, screen_w, screen_h*0.005))
+
+            pygame.draw.rect(self.screen, self.color_light, pygame.Rect(0, screen_h-screen_h*0.055+1, screen_w, screen_h*0.005))
 
         for i in self.buttons[self.s_man.get_state()]:
             if i[5]:

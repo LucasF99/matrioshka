@@ -2,6 +2,8 @@ import pygame
 import tiles
 import textures
 import random
+import buildings
+import os
 
 class GameStateManager(object):
 
@@ -67,6 +69,9 @@ class Drawer(object):
         self.ui_man = ui_manager
         self.screen_w = screen.get_width()
         self.screen_h = screen.get_height()
+
+        self.dir = os.path.dirname(__file__)
+
         pygame.font.init()
         #self.font = pygame.font.SysFont('oratorstdopentype', 24)
         self.font = pygame.font.SysFont('arial', 24)
@@ -74,6 +79,9 @@ class Drawer(object):
         if self.screen.get_width() < self.screen.get_height():
             limiting_dimension = self.screen.get_width()
         self.body_view_size = int(limiting_dimension*0.7)
+
+        self.img_test_red = pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','test_red.png')),
+                                                    (int(self.body_view_size/4), int(self.body_view_size/4)))
 
     def draw(self):
         if self.s_man.get_state() == 3:
@@ -90,7 +98,7 @@ class Drawer(object):
 
                 self.screen.blit(image, image_rect)
                 self.screen.blit(sphereimg, sphere_rect)
-                
+
                 if body.get_energy_level() == 1:
                     upgrade_img = pygame.transform.scale(body.upgrade_img, (int(self.body_view_size*0.3),int(self.body_view_size*0.3)))
                     upgrade_rect = upgrade_img.get_rect(center=(self.screen_w/2, self.screen_h/2))
@@ -104,10 +112,23 @@ class Drawer(object):
                 if self.screen.get_width() < self.screen.get_height():
                     limiting_dimension = self.screen.get_width()
 
+                build_select = body.check_mouse((pygame.mouse.get_pos()[0]-self.screen_w/2,
+                                                pygame.mouse.get_pos()[1]-self.screen_h/2), self.body_view_size/2)
+
                 image = pygame.transform.scale(image, (int(limiting_dimension*0.7), int(limiting_dimension*0.7)))
                 image_rect = image.get_rect(center=(self.screen.get_width()/2, self.screen.get_height()/2))
 
                 self.screen.blit(image, image_rect)
+
+                # TODO: fix
+                for i in range(8):
+                    build_rect = self.img_test_red.get_rect(center=(body.building_coords[i][0]*self.body_view_size/2,
+                                                                    body.building_coords[i][1]*self.body_view_size/2))
+                    self.screen.blit(self.img_test_red, build_rect)
+
+                if build_select[0] != None:
+                    sel_rect = self.img_test_red.get_rect(center=(build_select[0]+self.screen_w/2,build_select[1]+self.screen_h/2))
+                    self.screen.blit(self.img_test_red, sel_rect)
 
         elif self.s_man.get_state() == 4:
 
@@ -179,7 +200,7 @@ class RandomEventManager(object):
 
 class EventHandler(object):
 
-    def __init__(self, state_manager, data_manager, ui_manager, galaxy, screen):
+    def __init__(self, state_manager, data_manager, ui_manager, build_manager, galaxy, screen):
         self.s_man = state_manager
         self.d_man = data_manager
         self.galaxy = galaxy
@@ -192,6 +213,10 @@ class EventHandler(object):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 self.ui_man.check_button_pressed(pygame.mouse.get_pos())
+                if self.s_man.get_state() == 3 and self.s_man.get_body().get_type() == 'planet':
+                    build_index = self.s_man.get_body().check_mouse()[2]
+                    self.s_man.get_body().buildings[build_index] = 1
+                    build_manager.add('mines', buildings.Mine())
             if event.type == pygame.QUIT:
                 self.s_man.set_done(True)
             if event.type == pygame.KEYDOWN:

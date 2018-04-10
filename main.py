@@ -11,8 +11,8 @@ import ui
 
 def main():
     ## start pygame setup stuff
-    width = 1920
-    height = 1080
+    width = 1366
+    height = 768
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)
@@ -59,7 +59,7 @@ def main():
 
     ui_manager = ui.UIManager(state_manager, data_manager, screen)
 
-    event_handler = util.EventHandler(state_manager, data_manager, ui_manager, galaxy, screen)
+    event_handler = util.EventHandler(state_manager, data_manager, ui_manager, build_manager, galaxy, screen)
 
     random_event_manager = util.RandomEventManager(state_manager, data_manager)
     drawer = util.Drawer(state_manager, data_manager, ui_manager, galaxy, screen)
@@ -73,7 +73,7 @@ def main():
 
         event_handler.update()
         drawer.draw()
-        data_manager.update_data(build_manager)
+        data_manager.update_data(build_manager, clock.get_time())
         random_event_manager.update()
 
         pygame.display.flip()
