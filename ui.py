@@ -139,7 +139,6 @@ class UIManager(object):
             if i[5]:
                 rect = i[4].get_rect(topleft=(i[0], i[1]))
                 self.screen.blit(i[4],rect)
-            ## TODO: run func (i[5]) when clicked (do this in eventhandler)
 
         for i in self.elements[self.s_man.get_state()]:
             if i.get_shown():

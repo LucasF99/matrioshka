@@ -17,7 +17,7 @@ images = []
 
 dir = os.path.dirname(__file__)
 
-images.append(pygame.image.load(os.path.join(dir, "res", "tile-green.png"))) # index 0
+images.append(pygame.image.load(os.path.join(dir, "res", "tiles", "tile-green.png"))) # index 0
 
 ## TILES
 #
