@@ -19,3 +19,6 @@ class BuildingManager(object):
 
     def add(self, build_type, build):
         self.__dict__[build_type].append(build)
+
+    def build_tile(self, world, index, type):
+        world.set_tile(index, type)

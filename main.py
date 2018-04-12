@@ -11,8 +11,8 @@ import ui
 
 def main():
     ## start pygame setup stuff
-    width = 1920
-    height = 1080
+    width = 1366
+    height = 768
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)
@@ -38,9 +38,9 @@ def main():
     galaxy = univ.Galaxy(system)
 
     tmap_list = []
-    for i in range(10):
+    for i in range(50):
         row = []
-        for j in range(10):
+        for j in range(50):
             row.append(0)
         tmap_list.append(row)
 

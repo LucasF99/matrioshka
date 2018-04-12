@@ -91,7 +91,13 @@ class Drawer(object):
         self.camera_y += move[1]
 
     def zoom_camera(self, zoom):
-        self.camera_zoom += zoom
+        if self.camera_zoom + zoom < 0.2:
+            self.camera_zoom = 0.2
+        else:
+            self.camera_zoom += zoom
+
+    def zoom_mult(self, value):
+        self.camera_zoom *= value
 
     def draw(self):
         if self.s_man.get_state() == 3:
@@ -131,9 +137,10 @@ class Drawer(object):
                 self.screen.blit(image, image_rect)
 
                 for i in range(8):
-                    build_rect = self.img_test_red.get_rect(center=(body.building_coords[i][0]*self.body_view_size/2+self.screen_w/2,
+                    if body.buildings[i] == 1:
+                        build_rect = self.img_test_red.get_rect(center=(body.building_coords[i][0]*self.body_view_size/2+self.screen_w/2,
                                                                     body.building_coords[i][1]*self.body_view_size/2+self.screen_h/2))
-                    self.screen.blit(self.img_test_red, build_rect)
+                        self.screen.blit(self.img_test_red, build_rect)
 
                 if build_select[0] != None:
                     sel_rect = self.img_test_red.get_rect(center=(build_select[0]+self.screen_w/2,build_select[1]+self.screen_h/2))
@@ -145,11 +152,16 @@ class Drawer(object):
             tw = tmap.get_tile_w()
             th = tmap.get_tile_h()
 
+            images = []
+
+            for i in range(len(tiles.images)):
+                images.append(pygame.transform.scale(tiles.images[i], (int(tw*self.camera_zoom), int(th*self.camera_zoom))))
+
             for i in range(len(tmap.map)):
                 for j in range(len(tmap.map[i])):
                     x = self.camera_x - self.screen_w/2 + i * tw * self.camera_zoom
                     y = self.camera_y - self.screen_h/2 + j * th * self.camera_zoom
-                    image = pygame.transform.scale(tiles.images[tmap.map[i][j]], (int(tw*self.camera_zoom), int(th*self.camera_zoom)))
+                    image = pygame.transform.scale(images[tmap.map[i][j]], (int(tw*self.camera_zoom), int(th*self.camera_zoom)))
                     image_rect = image.get_rect(topleft = (x, y))
                     self.screen.blit(image, image_rect)
 
@@ -229,8 +241,11 @@ class EventHandler(object):
         self.b_man = build_manager
         self.galaxy = galaxy
         self.screen = screen
+        self.screen_w = screen.get_width()
+        self.screen_h = screen.get_height()
         self.ui_man = ui_manager
         self.drawer = drawer
+        self.world = self.s_man.get_world()
         self.last_mouse_x = 0
         self.last_mouse_y = 0
 
@@ -239,18 +254,23 @@ class EventHandler(object):
     #        self.ui_man.check_button_pressed(pygame.mouse.get_pos())
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                self.ui_man.check_button_pressed(pygame.mouse.get_pos())
+                self.ui_man.check_button_pressed(pygame.mouse.get_pos()) # check buttons
                 if self.s_man.get_state() == 3 and self.s_man.get_body().get_type() == 'planet':
                     build_index = self.s_man.get_body().check_mouse((pygame.mouse.get_pos()[0]-self.drawer.screen_w/2,
                                                     pygame.mouse.get_pos()[1]-self.drawer.screen_h/2), self.drawer.body_view_size/2)[2]
-                    if build_index != None:
+                    if build_index != None:         # build
                         self.s_man.get_body().buildings[build_index] = 1
                         self.b_man.add('mines', buildings.Mine())
+                if self.s_man.get_state() == 4: # build tiles
+                    index = self.s_man.get_world().get_tile_map().get_index(
+                                        pygame.mouse.get_pos(), (self.drawer.camera_x, self.drawer.camera_y),
+                                        self.drawer.camera_zoom, (self.screen_w, self.screen_h))
+                    self.b_man.build_tile(self.world, index, 1)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
-                    self.drawer.zoom_camera(0.3)
+                    self.drawer.zoom_mult(1.1)
                 elif event.button == 5:
-                    self.drawer.zoom_camera(-0.3)
+                    self.drawer.zoom_mult(0.9)
             if event.type == pygame.QUIT:
                 self.s_man.set_done(True)
             if event.type == pygame.KEYDOWN:

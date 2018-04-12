@@ -61,7 +61,10 @@ class UIManager(object):
         for i in range(5):
             self.elements.append([])
 
-        build_menu = Element(self, False)
+        build_menu = Element(self, False, (0, int(self.screen.get_height()*0.055)+3*64*self.scl))
+        build_menu.add_button(0, 0, 64*self.scl, 64*self.scl,
+                            self.img_energy_upgrade_icon, True, self.run_body_relative_func,
+                            [self.s_man, 'set_energy_level', 1])
 
         self.elements[3].append(build_menu)
         self.elements[2].append(self.elements[3][0])
@@ -151,8 +154,8 @@ class UIManager(object):
                     b[len(b)-2](b[len(b)-1])
         for e in self.elements[self.s_man.get_state()]:
             for b in e.buttons:
-                if pos[0] >= b[0] and pos[0] <= b[0]+b[2]:
-                    if pos[1] >= b[1] and pos[1] <= b[1]+b[3]:
+                if pos[0] >= e.pos[0]+b[0] and pos[0] <= e.pos[0]+b[0]+b[2]:
+                    if pos[1] >= e.pos[1]+b[1] and pos[1] <= e.pos[1]+b[1]+b[3]:
                         b[len(b)-2](b[len(b)-1])
 
 
@@ -163,22 +166,23 @@ class UIManager(object):
 
 class Element(object):
 
-    def __init__(self, ui_manager, show):
+    def __init__(self, ui_manager, show, pos):
         self.show = show
         self.ui_man = ui_manager
         self.screen = self.ui_man.screen
         self.scl = self.ui_man.scl
         self.s_man = self.ui_man.s_man
+        self.pos = pos
         self.init_buttons()
 
     def init_buttons(self):
         self.buttons = []
 
-        self.buttons.append((0, int(self.screen.get_height()*0.055)+3*64*self.scl, 64*self.scl, 64*self.scl,
-                            self.ui_man.img_energy_upgrade_icon, True, self.ui_man.run_body_relative_func, [self.ui_man.s_man, 'set_energy_level', 1]))
-
     def get_shown(self):
         return self.show
+
+    def add_button(self, x, y, w, h, img, show, func, args):
+        self.buttons.append((x, y, w, h, img, show, func, args))
 
     def set_shown(self, value):
         self.show = value
@@ -186,5 +190,5 @@ class Element(object):
     def draw(self):
         for i in self.buttons:
             if i[5]:
-                rect = i[4].get_rect(topleft=(i[0], i[1]))
+                rect = i[4].get_rect(topleft=(i[0]+self.pos[0], i[1]+self.pos[1]))
                 self.screen.blit(i[4],rect)
