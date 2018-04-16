@@ -75,6 +75,8 @@ class Drawer(object):
 
         self.dir = os.path.dirname(__file__)
 
+        self.tile_surface = pygame.Surface((64,64))
+
         pygame.font.init()
         #self.font = pygame.font.SysFont('oratorstdopentype', 24)
         self.font = pygame.font.SysFont('arial', 24)
@@ -85,6 +87,8 @@ class Drawer(object):
 
         self.img_test_red = pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','test_red.png')),
                                                     (int(self.body_view_size/4), int(self.body_view_size/4)))
+
+        self.update_tiles()
 
     def move_camera(self, move):
         self.camera_x += move[0]
@@ -98,6 +102,26 @@ class Drawer(object):
 
     def zoom_mult(self, value):
         self.camera_zoom *= value
+
+    def update_tiles(self):
+        tmap = self.s_man.get_world().get_tile_map()
+        tw = tmap.get_tile_w()
+        th = tmap.get_tile_h()
+
+        self.surface = pygame.Surface((len(tmap.map)*th, len(tmap.map[0])*tw))
+
+        images = []
+
+        for i in range(len(tiles.images)):
+            images.append(tiles.images[i])
+
+        for i in range(len(tmap.map)):
+            for j in range(len(tmap.map[i])):
+                x = i * tw
+                y = j * th
+                image = images[tmap.map[i][j]]
+                image_rect = image.get_rect(topleft = (x, y))
+                self.surface.blit(image, image_rect)
 
     def draw(self):
         if self.s_man.get_state() == 3:
@@ -148,22 +172,27 @@ class Drawer(object):
 
         elif self.s_man.get_state() == 4:
 
-            tmap = self.s_man.get_world().get_tile_map()
-            tw = tmap.get_tile_w()
-            th = tmap.get_tile_h()
-
-            images = []
-
-            for i in range(len(tiles.images)):
-                images.append(pygame.transform.scale(tiles.images[i], (int(tw*self.camera_zoom), int(th*self.camera_zoom))))
-
-            for i in range(len(tmap.map)):
-                for j in range(len(tmap.map[i])):
-                    x = self.camera_x - self.screen_w/2 + i * tw * self.camera_zoom
-                    y = self.camera_y - self.screen_h/2 + j * th * self.camera_zoom
-                    image = pygame.transform.scale(images[tmap.map[i][j]], (int(tw*self.camera_zoom), int(th*self.camera_zoom)))
-                    image_rect = image.get_rect(topleft = (x, y))
-                    self.screen.blit(image, image_rect)
+#            tmap = self.s_man.get_world().get_tile_map()
+#            tw = tmap.get_tile_w()
+#            th = tmap.get_tile_h()
+#
+#            images = []
+#
+#            for i in range(len(tiles.images)):
+#                images.append(pygame.transform.scale(tiles.images[i], (int(tw*self.camera_zoom), int(th*self.camera_zoom))))
+#
+#            for i in range(len(tmap.map)):
+#                for j in range(len(tmap.map[i])):
+#                    x = self.camera_x - self.screen_w/2 + i * tw * self.camera_zoom
+#                    y = self.camera_y - self.screen_h/2 + j * th * self.camera_zoom
+#                    image = pygame.transform.scale(images[tmap.map[i][j]], (int(tw*self.camera_zoom), int(th*self.camera_zoom)))
+#                    image_rect = image.get_rect(topleft = (x, y))
+#                    self.screen.blit(image, image_rect)
+#
+            x = self.camera_x - self.screen_w/2
+            y = self.camera_y - self.screen_h/2
+            surf = pygame.transform.scale(self.surface, (int(self.camera_zoom*self.surface.get_width()), int(self.camera_zoom*self.surface.get_height())))
+            self.screen.blit(surf, (x, y))
 
         elif self.s_man.get_state() == 5:
 
@@ -266,11 +295,12 @@ class EventHandler(object):
                                         pygame.mouse.get_pos(), (self.drawer.camera_x, self.drawer.camera_y),
                                         self.drawer.camera_zoom, (self.screen_w, self.screen_h))
                     self.b_man.build_tile(self.world, index, 1)
+                    self.drawer.update_tiles()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
-                    self.drawer.zoom_mult(1.1)
+                    self.drawer.zoom_mult(2)
                 elif event.button == 5:
-                    self.drawer.zoom_mult(0.9)
+                    self.drawer.zoom_mult(0.5)
             if event.type == pygame.QUIT:
                 self.s_man.set_done(True)
             if event.type == pygame.KEYDOWN:
