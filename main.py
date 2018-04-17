@@ -11,8 +11,8 @@ import ui
 
 def main():
     ## start pygame setup stuff
-    width = 1920
-    height = 1080
+    width = 1366
+    height = 768
     pygame.init()
     os.environ['SDL_VIDEO_WINDOW_POS'] = "0,0" # set window start pos to screen corner
     screen = pygame.display.set_mode((width, height), pygame.NOFRAME)

@@ -76,6 +76,8 @@ class Drawer(object):
         self.dir = os.path.dirname(__file__)
 
         self.tile_surface = pygame.Surface((64,64))
+        self.current_map = []
+        self.tile_images = []
 
         pygame.font.init()
         #self.font = pygame.font.SysFont('oratorstdopentype', 24)
@@ -87,8 +89,23 @@ class Drawer(object):
 
         self.img_test_red = pygame.transform.scale(pygame.image.load(os.path.join(self.dir,'res','test_red.png')),
                                                     (int(self.body_view_size/4), int(self.body_view_size/4)))
+        #
 
+        self.init_tile_array()
         self.update_tiles()
+
+    def init_tile_array(self):
+        self.current_map = []
+        tmap = self.s_man.get_world().get_tile_map()
+        for i in range(len(tmap.map)):
+            row = []
+            row2 = []
+            for j in range(len(tmap.map[i])):
+                row.append(None)
+                row2.append(None)
+            self.current_map.append(row)
+            self.tile_images.append(row2)
+        self.surface = pygame.Surface((len(tmap.map)*tmap.get_tile_h(), len(tmap.map[0])*tmap.get_tile_w()))
 
     def move_camera(self, move):
         self.camera_x += move[0]
@@ -108,8 +125,6 @@ class Drawer(object):
         tw = tmap.get_tile_w()
         th = tmap.get_tile_h()
 
-        self.surface = pygame.Surface((len(tmap.map)*th, len(tmap.map[0])*tw))
-
         images = []
 
         for i in range(len(tiles.images)):
@@ -117,11 +132,15 @@ class Drawer(object):
 
         for i in range(len(tmap.map)):
             for j in range(len(tmap.map[i])):
-                x = i * tw
-                y = j * th
-                image = images[tmap.map[i][j]]
-                image_rect = image.get_rect(topleft = (x, y))
-                self.surface.blit(image, image_rect)
+                if tmap.map[i][j] != self.current_map[i][j]:
+                    self.current_map[i][j] = tmap.map[i][j]
+                    x = i * tw
+                    y = j * th
+                    self.tile_images[i][j] = images[tmap.map[i][j]]
+                    image_rect = self.tile_images[i][j].get_rect(topleft = (x, y))
+                    self.surface.blit(self.tile_images[i][j], image_rect)
+                    print("updated")
+        print("done")
 
     def draw(self):
         if self.s_man.get_state() == 3:
